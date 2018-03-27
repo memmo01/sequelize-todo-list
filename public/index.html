@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.js"
+  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+    
+    <input id="todo">
+    <button id="submit">submit</button>
+
+
+    <h1> todo list: </h1>
+
+    <div class="todoListArea">
+        <table id = "todoItems">
+            <th> todo:</th> <th>date</th>
+        </table>
+
+    </div>
+
+
+    <script type = "text/javascript">
+
+
+
+
+run()
+function run(){
+    $("#todoItems").empty();
+$.get("/api/fullList" ,function(data){
+    console.log(data);
+
+     
+            
+
+    for(i=0;i<data.length;i++){
+        var id = data[i].id;
+        var action = data[i].action;
+         
+
+
+        var row = "<tr>";
+            row +="<td>"+data[i].action+"</td><td>"+data[i].date+"</td><td><button class='buttDelete' data-id="+id+">complete</button></td>";
+            row+="</tr>";
+             
+           
+         
+
+            $("#todoItems").append(row);
+    }
+
+    $(".buttDelete").on("click",function(){
+    console.log("delete works")
+
+        var id= ($(this).data("id"));
+        console.log(id)
+
+    $.ajax({
+        method:"DELETE",
+        url:"/api/todo/"+id
+    })
+    run()
+})
+
+
+$("#buttEdit").on("click",function(){
+    console.log("edit works")
+    
+
+
+
+
+    $.ajax({
+        method:"UPDATE",
+        url:"/api/todo/"+id
+    })
+    
+})
+        
+})
+}
+
+$("#submit").on("click", function(){
+
+    // getting value of post and the date with which the post occured
+    var action = $("#todo").val().trim()
+    var d= new Date();
+    var day = d.getDate()
+    var year = d.getFullYear();
+    var month = d.getMonth()
+    var date = month+ "/"+day +"/"+year;
+
+
+    // placing the values into an object
+    var info = {
+        action:action,
+        date:date
+           }
+
+           $("#todo").val("")
+
+        //    sending the information to the server to be placed into the database
+    $.post("/api/todo",info,function(){console.log("added")
+ run()})
+})
+
+
+
+
+
+
+</script>
+
+
+</body>
+</html>
